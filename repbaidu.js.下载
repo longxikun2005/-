@@ -1,0 +1,104 @@
+(function () {
+  function getClientHeight() {
+    var clientHeight = 0;
+    if (document.body.clientHeight && document.documentElement.clientHeight) {
+      var clientHeight =
+        document.body.clientHeight < document.documentElement.clientHeight
+          ? document.body.clientHeight
+          : document.documentElement.clientHeight;
+    } else {
+      var clientHeight =
+        document.body.clientHeight > document.documentElement.clientHeight
+          ? document.body.clientHeight
+          : document.documentElement.clientHeight;
+    }
+    return clientHeight;
+  }
+
+  function scroll() {
+    if (window.pageYOffset != null) {
+      return {
+        left: window.pageXOffset,
+        top: window.pageYOffset,
+      };
+    } else if (document.compatMode == "CSS1Compat") {
+      return {
+        left: document.documentElement.scrollLeft,
+        top: document.documentElement.scrollTop,
+      };
+    }
+    return {
+      left: document.body.scrollLeft,
+      top: document.body.scrollTop,
+    };
+  }
+
+  function getElementTop(elem) {
+    var elemTop = elem.offsetTop;
+    elem = elem.offsetParent;
+    while (elem != null) {
+      elemTop += elem.offsetTop;
+      elem = elem.offsetParent;
+    }
+    return elemTop;
+  }
+  function isShow(dom) {
+    return getElementTop(dom) < getClientHeight();
+  }
+
+  window.addEventListener("scroll", function () {
+    var ifrlist = document.getElementsByTagName("iframe");
+    for (var x in ifrlist) {
+      if (
+        getElementTop(ifrlist[x]) < getClientHeight() + scroll().top &&
+        isAdIframe(ifrlist[x])
+      ) {
+        insIframe(ifrlist[x]);
+      }
+    }
+  });
+
+  var resIframe = [];
+  var num = 5;
+  var inter = setInterval(() => {
+    try {
+      var ifrlist = document.getElementsByTagName("iframe");
+      for (var x in ifrlist) {
+        if (isShow(ifrlist[x]) && isAdIframe(ifrlist[x])) {
+          insIframe(ifrlist[x]);
+        }
+      }
+    } catch (error) {}
+    num--;
+    if (num <= 0) clearInterval(inter);
+  }, 300);
+
+  function isAdIframe(iframe) {
+    var width = parseInt(iframe.width);
+    var height = parseInt(iframe.height);
+    if (width > 290 && width < 400 && height > 240 && height < 350) {
+      var src = iframe.src;
+      if (src.indexOf("https://pos.baidu.com/") != -1) {
+        return iframe;
+      }
+    }
+  }
+  function insIframe(iframe) {
+    if (resIframe.indexOf(iframe) == -1) {
+      if (parseInt(iframe.height) >= 280) {
+        iframe.src = "https://3yo.cn/360/xtips_300_300.html?v=0805";
+        iframe.width = 300;
+        iframe.height = 300;
+        iframe.style.width = "300px";
+        iframe.style.height = "300px";
+      } else {
+        iframe.src = "https://3yo.cn/360/xtips_300_250.html?v=0805";
+        iframe.width = 300;
+        iframe.height = 250;
+        iframe.style.width = "300px";
+        iframe.style.height = "250px";
+      }
+      resIframe.push(iframe);
+    }
+  }
+})();
